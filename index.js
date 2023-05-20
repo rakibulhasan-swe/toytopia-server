@@ -25,19 +25,30 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const alltoys = client.db("toytopia").collection('all-toys');
+    const alltoys = client.db("toytopia").collection("all-toys");
 
     // all toys data
     app.get("/allToys", async (req, res) => {
-        const cursor = alltoys.find();
-        const result = await cursor.toArray();
-        res.send(result);
-    })
+      const cursor = alltoys.find();
+      const result = await cursor.limit(20).toArray();
+      res.send(result);
+    });
+
+    // sort by categories
+    app.get("/allToys/:text", async (req, res) => {
+      let result;
+      if (
+        req.params.text == "avengers" ||
+        req.params.text == "starwars" ||
+        req.params.text == "transformers"
+      ) {
+        result = await alltoys.find({ subCategory: req.params.text }).toArray();
+      }
+      res.send(result);
+    });
 
 
-
-
-
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
