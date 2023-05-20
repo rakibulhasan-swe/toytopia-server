@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -25,12 +25,34 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // database and collection/table
     const alltoys = client.db("toytopia").collection("all-toys");
 
     // all toys data
     app.get("/allToys", async (req, res) => {
       const cursor = alltoys.find();
       const result = await cursor.limit(20).toArray();
+      res.send(result);
+    });
+
+    // toy details
+    app.get("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = {
+        projection: {
+          _id: 1,
+          picture: 1,
+          toyName: 1,
+          sellerName: 1,
+          sellerEmail: 1,
+          price: 1,
+          rating: 1,
+          quantity: 1,
+          description: 1,
+        },
+      };
+      const result = await alltoys.findOne(query, options);
       res.send(result);
     });
 
@@ -46,9 +68,6 @@ async function run() {
       }
       res.send(result);
     });
-
-
-    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
