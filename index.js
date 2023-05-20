@@ -69,6 +69,25 @@ async function run() {
       res.send(result);
     });
 
+    // getting data by queries
+    app.get("/mytoy", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { sellerEmail: req.query.email };
+      }
+      const result = await alltoys.find(query).toArray();
+      res.send(result);
+    });
+
+    // create a toy
+    app.post("/addtoy", async (req, res) => {
+      const newToy = req.body;
+      const result = await alltoys.insertOne(newToy);
+      res.send(result);
+    });
+
+    //
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
