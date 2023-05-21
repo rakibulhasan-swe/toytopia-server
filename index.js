@@ -50,6 +50,7 @@ async function run() {
           rating: 1,
           quantity: 1,
           description: 1,
+          subCategory: 1,
         },
       };
       const result = await alltoys.findOne(query, options);
@@ -84,6 +85,30 @@ async function run() {
       const newToy = req.body;
       const result = await alltoys.insertOne(newToy);
       res.send(result);
+    });
+
+    // update toys
+    app.patch("/updatetoy/:id", async (req, res) => {
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)};
+        const options = { upsert: true };
+        const newToy = req.body;
+        const updatedToy = {
+            $set: {
+                toyName: newToy.toyName,
+                picture: newToy.picture,
+                sellerName: newToy.sellerName,
+                sellerEmail: newToy.sellerEmail,
+                price: newToy.price,
+                subCategory: newToy.subCategory,
+                rating: newToy.rating,
+                quantity: newToy.quantity,
+                description: newToy.description,
+            }
+        };
+        const result = await alltoys.updateOne(filter, updatedToy, options);
+        res.send(result);
+
     });
 
     // delete data
