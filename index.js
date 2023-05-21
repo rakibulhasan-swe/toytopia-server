@@ -28,6 +28,9 @@ async function run() {
     // database and collection/table
     const alltoys = client.db("toytopia").collection("all-toys");
 
+    // create index for searching
+    // alltoys.createIndex({ toyName: "text" });
+
     // all toys data
     app.get("/allToys", async (req, res) => {
       const cursor = alltoys.find();
@@ -46,6 +49,17 @@ async function run() {
         .toArray();
 
       res.json(result);
+    });
+
+    // seraching by name
+    app.get("/search/:toyname", async (req, res) => {
+      const name = req.params.toyname;
+      const toys = await alltoys.find().toArray();
+
+      const result = toys.filter((toy) =>
+        toy.toyName.toLowerCase().includes(name.toLowerCase())
+      );
+      res.send(result);
     });
 
     // toy details
